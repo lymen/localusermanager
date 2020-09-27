@@ -28,11 +28,6 @@ class RawLoginForm(forms.Form):
 					)
 
 class CreateUserForm(forms.ModelForm):
-	# def __init__(self, *args,**kwargs):
-	# 	choices = kwargs.pop("choices", None)
-	# 	super(CreateUserForm, self).__init__(*args, **kwargs)
-	# 	self.fields['group'].queryset = UserGroup.objects.all()
-
 	username	= forms.CharField(
 						label='Username',
 						required='True',
@@ -65,9 +60,9 @@ class CreateUserForm(forms.ModelForm):
 			'group',
 		]
 
-class CreateGroupForm(forms.ModelForm):
-	groupname	= forms.CharField(
-						label='Group Name',
+class EditUserForm(forms.ModelForm):
+	username	= forms.CharField(
+						label='Username',
 						required='True',
 						widget=forms.TextInput(
 							attrs={
@@ -76,20 +71,35 @@ class CreateGroupForm(forms.ModelForm):
 							}
 						)
 					)
-
+	password	= forms.CharField(
+						label='Password',
+						widget=forms.TextInput(
+							attrs={
+								"class": "form-control"
+							}
+						)
+					)
+	group		= forms.ModelChoiceField(		
+						label='User Group',
+						required='True',
+						queryset = UserGroup.objects.all()
+					)
+	
 	class Meta:
-		model = UserGroup
+		model = User
 		fields = [
-			'groupname',
+			'username',
+			'password',
+			'group',
 		]
 
-class EditGroupForm(forms.ModelForm):
+class GroupForm(forms.ModelForm):
 	groupname	= forms.CharField(
 						label='Group Name',
 						required='True',
 						widget=forms.TextInput(
 							attrs={
-								"class": "form-control edit-name",
+								"class": "form-control",
 								"autofocus": ""
 							}
 						)
@@ -115,6 +125,39 @@ class CreateObjectForm(forms.ModelForm):
 	password	= forms.CharField(
 						label='Password',
 						widget=forms.PasswordInput(
+							attrs={
+								"class": "form-control"
+							}
+						)
+					)
+	group		= forms.ModelChoiceField(		
+						label='Group',
+						required='True',
+						queryset = UserGroup.objects.all()
+					)
+	
+	class Meta:
+		model = Object
+		fields = [
+			'username',
+			'password',
+			'group',
+		]
+
+class EditObjectForm(forms.ModelForm):
+	username	= forms.CharField(
+						label='Username',
+						required='True',
+						widget=forms.TextInput(
+							attrs={
+								"class": "form-control",
+								"autofocus": ""
+							}
+						)
+					)
+	password	= forms.CharField(
+						label='Password',
+						widget=forms.TextInput(
 							attrs={
 								"class": "form-control"
 							}

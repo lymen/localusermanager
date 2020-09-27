@@ -20,10 +20,10 @@
 				dataType: 'json',
 				csrfmiddlewaretoken: '{{ csrf_token }}',
 				beforeSend: function(){
-					$('#editGroupModal').modal('show');
+					$('#editModal').modal('show');
 				},
 				success: function(data){
-					$('#editGroupModal .modal-content').html(data.html_form);
+					$('#editModal .modal-content').html(data.html_form);
 				}
 			});
 		});
@@ -41,10 +41,10 @@
 				dataType: 'json',
 				csrfmiddlewaretoken: '{{ csrf_token }}',
 				beforeSend: function(){
-					$('#deleteGroupModal').modal('show');
+					$('#deleteModal').modal('show');
 				},
 				success: function(data){
-					$('#deleteGroupModal .modal-content').html(data.html_form);
+					$('#deleteModal .modal-content').html(data.html_form);
 				}
 			});
 		});
@@ -62,7 +62,7 @@
 					<div class="col-sm-6 align-self-end">
 						<div class="row justify-content-end">
 							<input type="text" class="form-control col-sm-5" placeholder="Search&hellip;">
-							<a href="#createGroupModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Create Group</span></a>
+							<a href="#createModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Create Group</span></a>
 						</div>			
 					</div>
 				</div>
@@ -80,31 +80,19 @@
 						<td>{{ instance.groupname }}</td>
 						<td>
 							<!-- <a href='{{instance.get_absolute_url}}' class="edit"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a> -->
-							<a href="#editGroupModal" class="edit" data-toggle="modal" data-id="{{ instance.id }}"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-							<a href="#deleteGroupModal" class="delete" data-toggle="modal" data-id="{{ instance.id }}"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+							<a href="#editModal" class="edit" data-toggle="modal" data-id="{{ instance.id }}"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+							<a href="#deleteModal" class="delete" data-toggle="modal" data-id="{{ instance.id }}"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
 						</td>
 					</tr>
 {% endfor %}
 				</tbody>
 			</table>
-			<div class="clearfix">
-				<div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
-				<ul class="pagination">
-					<li class="page-item disabled"><a href="#">Previous</a></li>
-					<li class="page-item"><a href="#" class="page-link">1</a></li>
-					<li class="page-item"><a href="#" class="page-link">2</a></li>
-					<li class="page-item active"><a href="#" class="page-link">3</a></li>
-					<li class="page-item"><a href="#" class="page-link">4</a></li>
-					<li class="page-item"><a href="#" class="page-link">5</a></li>
-					<li class="page-item"><a href="#" class="page-link">Next</a></li>
-				</ul>
-			</div>
 		</div>
 	</div>        
 </div>
 
 <!-- Create Modal HTML -->
-<div id="createGroupModal" class="modal fade">
+<div id="createModal" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form method="POST">{% csrf_token %}
@@ -125,7 +113,7 @@
 </div>
 
 <!-- Edit Modal HTML -->
-<div id="editGroupModal" class="modal fade">
+<div id="editModal" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
 		</div>
@@ -133,7 +121,7 @@
 </div>
 
 <!-- Delete Modal HTML -->
-<div id="deleteGroupModal" class="modal fade">
+<div id="deleteModal" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
 		</div>

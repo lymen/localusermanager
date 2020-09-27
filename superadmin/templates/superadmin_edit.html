@@ -1,14 +1,14 @@
 {% load crispy_forms_tags %}
 			<form method="POST">{% csrf_token %}
 				<div class="modal-header">						
-					<h4 class="modal-title">Edit Group</h4>
+					<h4 class="modal-title">Edit {{ module }}</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				</div>
 				<div class="modal-body">
-					{{ editgroup_form|crispy }}
+					{{ edit_form|crispy }}
 				</div>
 				<div class="modal-footer">
 					<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel" href="../">
-					<input type="submit" class="btn btn-info" value="Save" name="editgroup_form">
+					<input type="submit" class="btn btn-info" value="Save" name="edit_form">
 				</div>
 			</form>

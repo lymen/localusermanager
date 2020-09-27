@@ -9,9 +9,8 @@ class SuperAdmin(models.Model):
 class UserGroup(models.Model):
 	groupname	= models.CharField(max_length=120, unique=True)
 
-	def get_absolute_url(self):
-		# return f"/product/{self.id}/"
-		return reverse("superadmin:superadmin-editgroup", kwargs={"id": self.id})
+	def __str__(self):
+		return u'{0}'.format(self.groupname)
 
 class User(models.Model):
 	username	= models.CharField(max_length=120, unique=True)
