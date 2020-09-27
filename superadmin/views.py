@@ -53,7 +53,7 @@ def superadmin_user(request):
 	if request.method=='POST' and 'createuser_form' in request.POST:
 		createuser = CreateUserForm(request.POST or None)
 		if createuser.is_valid():
-			# createuser.save()
+			createuser.save()
 			createuser = CreateUserForm()
 	# Create User End
 
@@ -84,21 +84,28 @@ def superadmin_group(request):
 	if request.method=='POST' and 'creategroup_form' in request.POST:
 		creategroup = CreateGroupForm(request.POST or None)
 		if creategroup.is_valid():
-			# creategroup.save()
+			creategroup.save()
 			creategroup = CreateGroupForm()
 	# Create Group End
 
 	# Edit Group Begin
 	if request.method=='POST' and 'editgroup_form' in request.POST:
 		editgroup = EditGroupForm(request.POST or None)
-		print(editgroup)
+
 		if editgroup.is_valid():
-			print('editgroup')
-			# obj = UserGroup.objects.get(id=editgroup.id)
+			obj = UserGroup.objects.get(id=request.session.get('editid'))
 			obj.groupname = editgroup.cleaned_data['groupname']
 			obj.save()
 			editgroup = EditGroupForm()
+			del request.session['editid']
 	# Edit Group End
+
+	# Delete Group Begin
+	if request.method=='POST' and 'deletegroup_form' in request.POST:
+		obj = UserGroup.objects.get(id=request.session.get('deleteid'))
+		obj.delete()
+		del request.session['deleteid']
+	# Delete Group End
 
 	message = "None"
 	result = True
@@ -114,60 +121,30 @@ def superadmin_group(request):
 	return render(request, "superadmin_group.html", context)
 
 def superadmin_editgroup(request, id):
-	# Initial Check Begin
-	username = request.session.get('adminuser')
-	if not username:
-		return redirect('superadmin:superadmin-login')
-
-	if request.method=='POST' and 'logout' in request.POST:
-		print("Logout")
-		return superadmin_logout(request)
-	# Initial Check End
-
-	obj = UserGroup.objects.get(id=id)
-	editgroup = EditGroupForm(instance=obj)
-
-	# Edit Group Begin
-	if request.method=='POST' and 'editgroup_form' in request.POST:
-		editgroup = EditGroupForm(request.POST or None)
-
-		if editgroup.is_valid():
-			obj.groupname = editgroup.cleaned_data['groupname']
-			obj.save()
-			editgroup = EditGroupForm()
-			return redirect('superadmin:superadmin-group')
-	# Edit Group End
-
-	context = {
-		'username': username,
-		'editgroup_form': editgroup,
-	}
-
-	return render(request, "superadmin_editgroup2.html", context)
-
-def validate_username(request, id):
-	print('validate entry')
+	request.session['editid'] = id
 	obj = UserGroup.objects.get(id=id)
 	data = dict();
-	if request.method=='POST':
-		form = EditGroupForm(instance=obj)
-		if form.is_valid():
-			print('validate')
-			obj.groupname = form.cleaned_data['groupname']
-			form.save()
-			data['form_is_valid'] = TRUE
-		else:
-			data['form_is_valid'] = FALSE
-	else:
-		form = EditGroupForm(instance=obj)
+
+	form = EditGroupForm(instance=obj)
 
 	context = {
 		'editgroup_form': form,
-		'editid': id
 	}
 
 	data['html_form'] = render_to_string('superadmin_editgroup.html', context, request=request)
-	print('validate end')
+	return JsonResponse(data)
+
+def superadmin_deletegroup(request, id):
+	request.session['deleteid'] = id
+	data = dict();
+
+	form = EditGroupForm(instance=UserGroup.objects.get(id=id))
+
+	context = {
+		'form': form,
+	}
+
+	data['html_form'] = render_to_string('superadmin_deletegroup.html', context, request=request)
 	return JsonResponse(data)
 
 def superadmin_object(request):
