@@ -1,0 +1,48 @@
+{% extends 'base_user.html' %}
+
+{% block content %}
+
+<script>
+function copyToClipboard(element) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(element).text()).select();
+  document.execCommand("copy");
+  $temp.remove();
+  alert("Copied the password: " + $(element).text());
+}
+
+</script>  
+
+<div class="container-lg">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-8"><h2>Account <b>Details</b></h2></div>
+                </div>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Group</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ response.username }}</td>
+                        <td><p id="myPassword">{{ response.password }}</p></td>
+                        <td>{{ response.group }}</td>
+                        <td>
+                            <center><a onclick="return copyToClipboard('#myPassword');"><i class="material-icons icon-center nav-link" data-toggle="tooltip" title="Copy Password">content_copy</i></a></center>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>   
+{% endblock %}
