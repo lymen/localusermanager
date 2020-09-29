@@ -20,9 +20,12 @@ Steps:
    
     ```python manage.py runserver```
     
-    Starting development server at http://127.0.0.1:8000/ <-- user this link to access the web site
+    ```Starting development server at http://127.0.0.1:8000/``` <-- user this link to access the web site
     
 Links:
+
 //http://127.0.0.1:8000/superadmin <-- to access the superadmin page
+
 //http://127.0.0.1:8000/user <-- to access the user page
+
 //http://127.0.0.1:8000/ <-- to access the object page
