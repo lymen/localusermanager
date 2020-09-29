@@ -14,6 +14,7 @@ Steps:
    
  4. Install needed requirements
  
+    ```pip install django```
     ```pip install -r requirements.txt```
     
   5. Run the django server
