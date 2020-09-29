@@ -5,6 +5,7 @@
 <script>
 function copyToClipboard(element) {
   var $temp = $("<input>");
+  console.log(element);
   $("body").append($temp);
   $temp.val($(element).text()).select();
   document.execCommand("copy");
@@ -12,14 +13,24 @@ function copyToClipboard(element) {
   alert("Copied the password: " + $(element).text());
 }
 
-</script>  
+</script>
 
 <div class="container-lg">
     <div class="table-responsive">
         <div class="table-wrapper">
             <div class="table-title">
                 <div class="row">
-                    <div class="col-sm-8"><h2>Account <b>Details</b></h2></div>
+                    <div class="col-sm-6">
+                        <h2>Password Changelog</h2>
+                    </div>
+                    <div class="col-sm-6 align-self-end">
+                        <div class="row justify-content-end">
+                            <form class="form-inline my-2 my-lg-0" method="POST"> {% csrf_token %}
+                              <input class="form-control mr-sm-2" type="search" placeholder="Search Username" aria-label="Search" name="searchkey">
+                              <button class="btn btn-outline-success my-2 my-sm-0" type="submit" name="search_form">Search</button>
+                            </form>
+                        </div>          
+                    </div>
                 </div>
             </div>
             <table class="table">
@@ -27,19 +38,21 @@ function copyToClipboard(element) {
                     <tr>
                         <th>Username</th>
                         <th>Password</th>
-                        <th>Group</th>
+                        <th>Modified</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
+{% for instance in changelog %}
                     <tr>
-                        <td>{{ response.username }}</td>
-                        <td><p id="myPassword">{{ response.password }}</p></td>
-                        <td>{{ response.group }}</td>
+                        <td>{{ instance.username }}</td>
+                        <td><p id="myPassword{{ instance.id }}">{{ instance.password }}</p></td>
+                        <td>{{ instance.modified }}</td>
                         <td>
-                            <center><a onclick="return copyToClipboard('#myPassword');"><i class="material-icons icon-center nav-link" data-toggle="tooltip" title="Copy Password">content_copy</i></a></center>
+                            <center><a onclick="return copyToClipboard('#myPassword{{ instance.id }}');"><i class="material-icons icon-center nav-link" data-toggle="tooltip" title="Copy Password">content_copy</i></a></center>
                         </td>
                     </tr>
+{% endfor %}
                 </tbody>
             </table>
         </div>

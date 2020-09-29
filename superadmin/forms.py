@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import SuperAdmin, User, UserGroup, Object
+from .models import SuperAdmin, User, UserGroup, Account
 
 class RawLoginForm(forms.Form):
 	username	= forms.CharField(
@@ -111,7 +111,7 @@ class GroupForm(forms.ModelForm):
 			'groupname',
 		]
 
-class CreateObjectForm(forms.ModelForm):
+class CreateAccountForm(forms.ModelForm):
 	username	= forms.CharField(
 						label='Username',
 						required='True',
@@ -137,14 +137,14 @@ class CreateObjectForm(forms.ModelForm):
 					)
 	
 	class Meta:
-		model = Object
+		model = Account
 		fields = [
 			'username',
 			'password',
 			'group',
 		]
 
-class EditObjectForm(forms.ModelForm):
+class EditAccountForm(forms.ModelForm):
 	username	= forms.CharField(
 						label='Username',
 						required='True',
@@ -170,7 +170,7 @@ class EditObjectForm(forms.ModelForm):
 					)
 	
 	class Meta:
-		model = Object
+		model = Account
 		fields = [
 			'username',
 			'password',

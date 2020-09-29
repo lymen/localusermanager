@@ -3,10 +3,11 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.hashers import make_password, check_password
 
-from .models import SuperAdmin, User, UserGroup, Object
-from .forms import RawLoginForm, CreateUserForm, GroupForm, CreateObjectForm
-from .forms import EditUserForm, EditObjectForm
+from .models import SuperAdmin, User, UserGroup, Account, AccountChangeLog
+from .forms import RawLoginForm, CreateUserForm, GroupForm, CreateAccountForm
+from .forms import EditUserForm, EditAccountForm
 
 # update_session_auth_hash(request, user)
 
@@ -51,7 +52,10 @@ def superadmin_user(request):
 		return superadmin_logout(request)
 	# Initial Check End
 
+	result = True
+	message = ""
 	createuser = CreateUserForm()
+	errorform = CreateUserForm()
 	edituser = EditUserForm()
 
 	# Create User Begin
@@ -60,7 +64,11 @@ def superadmin_user(request):
 		print(createuser.errors.as_data())
 		if createuser.is_valid():
 			createuser.save()
-		
+			message = "Successfully created new user."
+		else:
+			result = False
+			errorform = createuser
+
 		createuser = CreateUserForm()
 	# Create User End
 
@@ -71,27 +79,37 @@ def superadmin_user(request):
 		print(edituser.errors.as_data())
 		if edituser.is_valid():
 			edituser.save();
+			message = "New user was created."
 		else:
 			obj = User.objects.get(id=request.session.get('editid'))
 			obj.password = edituser.cleaned_data['password']
 			obj.group = edituser.cleaned_data['group']
 			obj.save()
-			edituser = EditUserForm()
 			del request.session['editid']
+			message = "Successfully updated the user details."
+
+		edituser = EditUserForm()
 	# Edit User End
 
 	# Delete User Begin
 	if request.method=='POST' and 'delete_form' in request.POST:
-		obj = User.objects.get(id=request.session.get('deleteid'))
-		obj.delete()
-		del request.session['deleteid']
+		try:
+			obj = User.objects.get(id=request.session.get('deleteid'))
+			obj.delete()
+			del request.session['deleteid']
+			message = "Successfully deleted the user details."
+		except User.DoesNotExist:
+			return redirect('superadmin:superadmin-user')
 	# Delete User End
 
 	userlist = User.objects.all()
 	context = {
 		'username': username,
 		'createuser_form': createuser,
-		'user_list': userlist
+		'user_list': userlist,
+		'result': result,
+		'message': message,
+		'errorform' : errorform
 	}
 
 	return render(request, "superadmin_user.html", context)
@@ -108,14 +126,22 @@ def superadmin_group(request):
 	# Initial Check End
 
 	creategroup = GroupForm()
+	errorform = GroupForm()
 	editgroup = GroupForm()
+	result = True
+	message = ""
 
 	# Create Group Begin
 	if request.method=='POST' and 'creategroup_form' in request.POST:
 		creategroup = GroupForm(request.POST or None)
 		if creategroup.is_valid():
 			creategroup.save()
-			creategroup = GroupForm()
+			message = "Successfully created new group."
+		else:
+			result = False
+			errorform = creategroup
+
+		creategroup = GroupForm()
 	# Create Group End
 
 	# Edit Group Begin
@@ -126,44 +152,127 @@ def superadmin_group(request):
 			obj = UserGroup.objects.get(id=request.session.get('editid'))
 			obj.groupname = editgroup.cleaned_data['groupname']
 			obj.save()
-			editgroup = GroupForm()
 			del request.session['editid']
+			message = "Successfully updated the group name."
+		else:
+			result = False
+			errorform = creategroup
+
+		editgroup = GroupForm()
 	# Edit Group End
 
 	# Delete Group Begin
 	if request.method=='POST' and 'delete_form' in request.POST:
-		obj = UserGroup.objects.get(id=request.session.get('deleteid'))
-		obj.delete()
-		del request.session['deleteid']
+		try:
+			obj = UserGroup.objects.get(id=request.session.get('deleteid'))
+			obj.delete()
+			del request.session['deleteid']
+			message = "Successfully deleted the group."
+		except UserGroup.DoesNotExist:
+			return redirect('superadmin:superadmin-group')
 	# Delete Group End
 
-	message = "None"
-	result = True
 	grouplist = UserGroup.objects.all()
 	context = {
 		'username': username,
 		'creategroup_form': creategroup,
 		'group_list': grouplist,
 		'message': message,
-		'result': result
+		'result': result,
+		'errorform': errorform
 	}
 
 	return render(request, "superadmin_group.html", context)
 
-def superadmin_editgroup(request, id):
-	request.session['editid'] = id
-	obj = UserGroup.objects.get(id=id)
-	data = dict();
+def superadmin_account(request):
+	# Initial Check Begin
+	username = request.session.get('adminuser')
+	if not username:
+		return redirect('superadmin:superadmin-login')
 
-	form = GroupForm(instance=obj)
+	if request.method=='POST' and 'logout' in request.POST:
+		print("Logout")
+		return superadmin_logout(request)
+	# Initial Check End
 
+	result = True
+	message = ""
+	errorform = CreateAccountForm()
+	createaccount = CreateAccountForm()
+	editaccount = EditAccountForm()
+
+	# Create Account Begin
+	if request.method=='POST' and 'createaccount_form' in request.POST:
+		createaccount = CreateAccountForm(request.POST or None)
+		print(createaccount.errors.as_data())
+		if createaccount.is_valid():
+			createaccount.save()
+			message = "Successfully created new Account."
+			try:
+				account = Account.objects.get(username=createaccount.cleaned_data['username'])
+				changelog = AccountChangeLog(username=account, password=createaccount.cleaned_data['password'])
+				changelog.save()
+			except Account.DoesNotExist:
+				print("here")
+				changelog = ""
+		else:
+			result = False
+			errorform = createaccount
+
+		createaccount = CreateAccountForm()
+	# Create Account End
+
+	# Edit Account Begin
+	if request.method=='POST' and 'edit_form' in request.POST:
+		editaccount = EditAccountForm(request.POST or None)
+		# editaccount = PasswordChangeForm(request.account, request.POST)
+		print(editaccount.errors.as_data())
+		if editaccount.is_valid():
+			editaccount.save();
+			message = "New Account was created."
+		else:
+			obj = Account.objects.get(id=request.session.get('editid'))
+			obj.password = editaccount.cleaned_data['password']
+			obj.group = editaccount.cleaned_data['group']
+			obj.save()
+			del request.session['editid']
+			message = "Successfully updated the Account details."
+		
+		editaccount = EditAccountForm()
+	# Edit Account End
+
+	# Delete Account Begin
+	if request.method=='POST' and 'delete_form' in request.POST:
+		try:
+			obj = Account.objects.get(id=request.session.get('deleteid'))
+			obj.delete()
+			del request.session['deleteid']
+			message = "Successfully deleted the Account details."
+		except Account.DoesNotExist:
+			return redirect('superadmin:superadmin-account')
+	# Delete Account End
+
+	accountlist = Account.objects.all()
 	context = {
-		'edit_form': form,
-		'module': 'Group'
+		'username': username,
+		'createaccount_form': createaccount,
+		'account_list': accountlist,
+		'result': result,
+		'message': message,
+		'errorform' : errorform
 	}
 
-	data['html_form'] = render_to_string('superadmin_edit.html', context, request=request)
-	return JsonResponse(data)
+	return render(request, "superadmin_account.html", context)
+
+def superadmin_logout(request):
+	username = request.session.get('adminuser')
+	if username and request.method=='POST' and 'logout' in request.POST:
+		print("Logout Button Clicked")
+		del request.session['adminuser']
+		return redirect('superadmin:superadmin-login')
+	
+	print("Logout Button Unclicked")
+	return redirect('superadmin:superadmin-user')
 
 def superadmin_edituser(request, id):
 	request.session['editid'] = id
@@ -180,19 +289,47 @@ def superadmin_edituser(request, id):
 	data['html_form'] = render_to_string('superadmin_edit.html', context, request=request)
 	return JsonResponse(data)
 
-def superadmin_editobject(request, id):
+def superadmin_editgroup(request, id):
 	request.session['editid'] = id
-	obj = Object.objects.get(id=id)
+	obj = UserGroup.objects.get(id=id)
 	data = dict();
 
-	form = EditObjectForm(instance=obj)
+	form = GroupForm(instance=obj)
 
 	context = {
 		'edit_form': form,
-		'module': 'Object'
+		'module': 'Group'
 	}
 
 	data['html_form'] = render_to_string('superadmin_edit.html', context, request=request)
+	return JsonResponse(data)
+
+def superadmin_editaccount(request, id):
+	request.session['editid'] = id
+	obj = Account.objects.get(id=id)
+	data = dict();
+
+	form = EditAccountForm(instance=obj)
+
+	context = {
+		'edit_form': form,
+		'module': 'Account'
+	}
+
+	data['html_form'] = render_to_string('superadmin_edit.html', context, request=request)
+	return JsonResponse(data)
+
+def superadmin_deleteuser(request, id):
+	request.session['deleteid'] = id
+	data = dict();
+
+	form = EditUserForm(instance=User.objects.get(id=id))
+	context = {
+		'form': form,
+		'module': 'User'
+	}
+
+	data['html_form'] = render_to_string('superadmin_delete.html', context, request=request)
 	return JsonResponse(data)
 
 def superadmin_deletegroup(request, id):
@@ -209,93 +346,15 @@ def superadmin_deletegroup(request, id):
 	data['html_form'] = render_to_string('superadmin_delete.html', context, request=request)
 	return JsonResponse(data)
 
-def superadmin_deleteuser(request, id):
+def superadmin_deleteaccount(request, id):
 	request.session['deleteid'] = id
 	data = dict();
 
-	form = EditUserForm(instance=User.objects.get(id=id))
+	form = EditAccountForm(instance=Account.objects.get(id=id))
 	context = {
 		'form': form,
-		'module': 'User'
+		'module': 'Account'
 	}
 
 	data['html_form'] = render_to_string('superadmin_delete.html', context, request=request)
 	return JsonResponse(data)
-
-def superadmin_deleteobject(request, id):
-	request.session['deleteid'] = id
-	data = dict();
-
-	form = EditObjectForm(instance=Object.objects.get(id=id))
-	context = {
-		'form': form,
-		'module': 'Object'
-	}
-
-	data['html_form'] = render_to_string('superadmin_delete.html', context, request=request)
-	return JsonResponse(data)
-
-def superadmin_object(request):
-	# Initial Check Begin
-	username = request.session.get('adminuser')
-	if not username:
-		return redirect('superadmin:superadmin-login')
-
-	if request.method=='POST' and 'logout' in request.POST:
-		print("Logout")
-		return superadmin_logout(request)
-	# Initial Check End
-
-	createobject = CreateObjectForm()
-	editobject = EditObjectForm()
-
-	# Create Object Begin
-	if request.method=='POST' and 'createobject_form' in request.POST:
-		createobject = CreateObjectForm(request.POST or None)
-		print(createobject.errors.as_data())
-		if createobject.is_valid():
-			createobject.save()
-			createobject = CreateObjectForm()
-	# Create Object End
-
-	# Edit Object Begin
-	if request.method=='POST' and 'edit_form' in request.POST:
-		editobject = EditObjectForm(request.POST or None)
-		# editobject = PasswordChangeForm(request.object, request.POST)
-		print(editobject.errors.as_data())
-		if editobject.is_valid():
-			editobject.save();
-		else:
-			obj = Object.objects.get(id=request.session.get('editid'))
-			obj.password = editobject.cleaned_data['password']
-			obj.group = editobject.cleaned_data['group']
-			obj.save()
-			editobject = EditObjectForm()
-			del request.session['editid']
-	# Edit Object End
-
-	# Delete Object Begin
-	if request.method=='POST' and 'delete_form' in request.POST:
-		obj = Object.objects.get(id=request.session.get('deleteid'))
-		obj.delete()
-		del request.session['deleteid']
-	# Delete Object End
-
-	objectlist = Object.objects.all()
-	context = {
-		'username': username,
-		'createobject_form': createobject,
-		'object_list': objectlist
-	}
-
-	return render(request, "superadmin_object.html", context)
-
-def superadmin_logout(request):
-	username = request.session.get('adminuser')
-	if username and request.method=='POST' and 'logout' in request.POST:
-		print("Logout Button Clicked")
-		del request.session['adminuser']
-		return redirect('superadmin:superadmin-login')
-	
-	print("Logout Button Unclicked")
-	return redirect('superadmin:superadmin-user')

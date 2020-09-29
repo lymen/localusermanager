@@ -17,12 +17,15 @@ class User(models.Model):
 	password	= models.CharField(max_length=120)
 	group		= models.ForeignKey(UserGroup, on_delete=models.CASCADE)
 
-class Object(models.Model):
+class Account(models.Model):
 	username	= models.CharField(max_length=120, unique=True)
 	password	= models.CharField(max_length=120)
 	group		= models.ForeignKey(UserGroup, on_delete=models.CASCADE)
 
-class ObjChangeLog(models.Model):
-	username	= models.ForeignKey(Object, on_delete=models.CASCADE)
+	def __str__(self):
+		return u'{0}'.format(self.username)
+
+class AccountChangeLog(models.Model):
+	username	= models.ForeignKey(Account, on_delete=models.CASCADE)
 	password	= models.CharField(max_length=120)
-	datachanged	= models.DateTimeField()
+	modified	= models.DateTimeField(auto_now_add=True)

@@ -3,13 +3,13 @@ from .views import (
 	superadmin_login,
 	superadmin_user,
 	superadmin_group,
-	superadmin_object,
+	superadmin_account,
 	superadmin_edituser,
 	superadmin_editgroup,
-	superadmin_editobject,
+	superadmin_editaccount,
 	superadmin_deleteuser,
 	superadmin_deletegroup,
-	superadmin_deleteobject
+	superadmin_deleteaccount
 	)
 
 app_name = 'superadmin'
@@ -22,7 +22,7 @@ urlpatterns = [
     path('group', superadmin_group, name='superadmin-group'),
     path('group/<int:id>/edit/', superadmin_editgroup, name='superadmin-editgroup'),
     path('group/<int:id>/delete/', superadmin_deletegroup, name='superadmin-deletegroup'),
-    path('object', superadmin_object, name='superadmin-object'),
-    path('object/<int:id>/edit/', superadmin_editobject, name='superadmin-editobject'),
-    path('object/<int:id>/delete/', superadmin_deleteobject, name='superadmin-deleteobject'),
+    path('account', superadmin_account, name='superadmin-account'),
+    path('account/<int:id>/edit/', superadmin_editaccount, name='superadmin-editaccount'),
+    path('account/<int:id>/delete/', superadmin_deleteaccount, name='superadmin-deleteaccount'),
 ]

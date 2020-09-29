@@ -52,6 +52,26 @@
 </script>
 
 <div class="container-xl">
+        {% if not result %}
+          	{% for error in errorform.non_field_errors %}
+	          	<div class="alert alert-danger">
+	            	<strong>{{ error }}</strong>
+	        	</div>
+    		{% endfor %}
+    		{% for field in errorform %}
+		        {% for error in field.errors %}
+		            <div class="alert alert-danger">
+		                <strong>{{ error }}</strong>
+		            </div>
+		        {% endfor %}
+		    {% endfor %}
+        {% else %}
+        	{% if message %}
+	            <div class="alert alert-success">
+	            	<strong>{{ message }}</strong>
+	           	</div>
+           	{% endif %}
+        {% endif%}
 	<div class="table-responsive">
 		<div class="table-wrapper">
 			<div class="table-title">
