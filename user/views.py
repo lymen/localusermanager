@@ -49,12 +49,16 @@ def user_home(request):
 		searchkey = request.POST.get("searchkey")
 
 		try:
-			userdata = Account.objects.get(username=searchkey)
+			userdata = User.objects.get(username=username)
 			try:
-				changelog = AccountChangeLog.objects.filter(username=userdata)
-			except AccountChangeLog.DoesNotExist:
+				accountdata = Account.objects.get(username=searchkey, group=userdata.group)
+				try:
+					changelog = AccountChangeLog.objects.filter(username=accountdata)
+				except AccountChangeLog.DoesNotExist:
+					changelog = ""
+			except Account.DoesNotExist:
 				changelog = ""
-		except Account.DoesNotExist:
+		except User.DoesNotExist:
 			changelog = ""
 
 	context = {
