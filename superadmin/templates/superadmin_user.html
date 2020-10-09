@@ -4,6 +4,11 @@
 {% block content %}
 
 <script>
+
+	$(document).ready(function(){
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+
 	$(document).ready(function(){
 		$(".active").removeClass("active");
 		$("#nav-users").addClass("active");
@@ -50,6 +55,20 @@
 			});
 		});
 	});
+
+	function showPassword(element) {
+	  // var x = document.getElementById("myInput");
+	  var x = document.getElementById(element);
+	  var icon = document.getElementById('show'+element);
+	  console.log("{{instance.password}}")
+	  if (x.type === "password") {
+	    x.type = "text";
+	    icon.value = "visibility_off"
+	  } else {
+	    x.type = "password";
+	    icon.value = "visibility"
+	  }
+	}
 </script>
 
 <div class="container-xl">
@@ -101,9 +120,12 @@
 {% for instance in user_list %}
 					<tr>
 						<td>{{ instance.username }}</td>
-						<td>{{ instance.password }}</td>
+						<td>							
+                            <input type="password" class = "no-border" id="myPassword{{ instance.id }}" value="{{ instance.password }}" disabled>
+						</td>
 						<td>{{ instance.group }}</td>
 						<td>
+                            <a onclick="return showPassword('myPassword{{ instance.id }}');" class="show"><i class="material-icons" data-toggle="tooltip" title="Show Password" id='showmyPassword{{ instance.id }}'>visibility</i></a>
 							<a href="#editModal" class="edit" data-toggle="modal" data-id="{{ instance.id }}"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
 							<a href="#deleteModal" class="delete" data-toggle="modal" data-id="{{ instance.id }}"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
 						</td>

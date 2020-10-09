@@ -19,7 +19,7 @@
       <h1 class="h3 mb-3 font-weight-normal">Sign In</h1>
       
       {% if not response %}
-        <p class="text-danger">Invalid username or password.</h5>
+        <h5><p class="text-danger">Invalid username or password.</h5>
       {% endif%}
       
       <form class="form-signin" method="POST"> {% csrf_token %}

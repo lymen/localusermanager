@@ -3,14 +3,39 @@
 {% block content %}
 
 <script>
+
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
 function copyToClipboard(element) {
-  var $temp = $("<input>");
-  console.log(element);
-  $("body").append($temp);
-  $temp.val($(element).text()).select();
+  /* Get the text field */
+  var copyText = document.getElementById(element);
+
+  /* Select the text field */
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+  /* Copy the text inside the text field */
   document.execCommand("copy");
-  $temp.remove();
-  alert("Copied the password: " + $(element).text());
+
+  /* Alert the copied text */
+  alert("Copied the text: " + copyText.value);
+}
+
+function showPassword(element) {
+  // var x = document.getElementById("myInput");
+  var x = document.getElementById(element);
+  var icon = document.getElementById('show'+element);
+  console.log(icon);
+  console.log("{{instance.password}}")
+  if (x.type === "password") {
+    x.type = "text";
+    icon.value = "visibility_off"
+  } else {
+    x.type = "password";
+    icon.value = "visibility"
+  }
 }
 
 </script>
@@ -24,12 +49,10 @@ function copyToClipboard(element) {
                         <h2>Password Changelog</h2>
                     </div>
                     <div class="col-sm-6 align-self-end">
-                        <div class="row justify-content-end">
-                            <form class="form-inline my-2 my-lg-0" method="POST"> {% csrf_token %}
+                            <form class="form-inline my-2 my-lg-0 justify-content-end" method="POST"> {% csrf_token %}
                               <input class="form-control mr-sm-2" type="search" placeholder="Search Username" aria-label="Search" name="searchkey">
                               <button class="btn btn-outline-success my-2 my-sm-0" type="submit" name="search_form">Search</button>
                             </form>
-                        </div>          
                     </div>
                 </div>
             </div>
@@ -46,10 +69,13 @@ function copyToClipboard(element) {
 {% for instance in changelog %}
                     <tr>
                         <td>{{ instance.username }}</td>
-                        <td><p id="myPassword{{ instance.id }}">{{ instance.password }}</p></td>
+                        <td>
+                            <input type="password" class = "no-border" id="myPassword{{ instance.id }}" value="{{ instance.password }}" disabled>
+                        </td>
                         <td>{{ instance.modified }}</td>
                         <td>
-                            <center><a onclick="return copyToClipboard('#myPassword{{ instance.id }}');"><i class="material-icons icon-center nav-link" data-toggle="tooltip" title="Copy Password">content_copy</i></a></center>
+                            <a onclick="return showPassword('myPassword{{ instance.id }}');" class="show"><i class="material-icons" data-toggle="tooltip" title="Show Password" id='showmyPassword{{ instance.id }}'>visibility</i></a>
+                            <a onclick="return copyToClipboard('myPassword{{ instance.id }}');" class="copy"><i class="material-icons" data-toggle="tooltip" title="Copy Password">content_copy</i></a>
                         </td>
                     </tr>
 {% endfor %}
