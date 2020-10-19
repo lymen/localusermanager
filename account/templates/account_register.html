@@ -18,9 +18,9 @@
       <h1 class="h3 mb-3 font-weight-normal">Register/Edit your password</h1>
       
       {% if not response %}
-        <p class="text-danger">Invalid username. You must input an existing username.</h5>
+        <h5><p class="text-danger">Invalid username. You must input an existing username.</h5>
       {% else %}
-        <p class="text-success">{{ message }}</h5>
+        <h5><p class="text-success">{{ message }}</h5>
       {% endif%}
       
       <form class="form-signin" method="POST"> {% csrf_token %}
