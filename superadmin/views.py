@@ -83,7 +83,7 @@ def superadmin_user(request):
 		else:
 			obj = User.objects.get(id=request.session.get('editid'))
 			obj.password = edituser.cleaned_data['password']
-			obj.group = edituser.cleaned_data['group']
+			obj.group.set(edituser.cleaned_data['group'])
 			obj.save()
 			del request.session['editid']
 			message = "Successfully updated the user details."
@@ -233,7 +233,7 @@ def superadmin_account(request):
 		else:
 			obj = Account.objects.get(id=request.session.get('editid'))
 			obj.password = editaccount.cleaned_data['password']
-			obj.group = editaccount.cleaned_data['group']
+			obj.group.set(editaccount.cleaned_data['group'])
 			obj.save()
 			del request.session['editid']
 			message = "Successfully updated the Account details."

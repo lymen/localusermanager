@@ -123,7 +123,7 @@
 						<td>							
                             <input type="password" class = "no-border" id="myPassword{{ instance.id }}" value="{{ instance.password }}" disabled>
 						</td>
-						<td>{{ instance.group }}</td>
+						<td>{{ instance.get_group_values }}</td>
 						<td>
                             <a onclick="return showPassword('myPassword{{ instance.id }}');" class="show"><i class="material-icons" data-toggle="tooltip" title="Show Password" id='showmyPassword{{ instance.id }}'>visibility</i></a>
 							<a href="#editModal" class="edit" data-toggle="modal" data-id="{{ instance.id }}"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>

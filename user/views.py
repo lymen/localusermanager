@@ -50,12 +50,21 @@ def user_home(request):
 
 		try:
 			userdata = User.objects.get(username=username)
+			grouplist = userdata.group.all().values_list('id', flat='True')
+
 			try:
-				accountdata = Account.objects.get(username=searchkey, group=userdata.group)
-				try:
-					changelog = AccountChangeLog.objects.filter(username=accountdata)
-				except AccountChangeLog.DoesNotExist:
-					changelog = ""
+				accountid = Account.objects.filter(username=searchkey, group__id__in=grouplist).values_list('id', flat='True').distinct()
+
+				for id in accountid.iterator():
+					try:
+						accountdata = Account.objects.get(id=id)
+						try:
+							changelog = AccountChangeLog.objects.filter(username=accountdata)
+						except AccountChangeLog.DoesNotExist:
+							changelog = ""
+					except Account.DoesNotExist:
+						changelog = ""
+
 			except Account.DoesNotExist:
 				changelog = ""
 		except User.DoesNotExist:

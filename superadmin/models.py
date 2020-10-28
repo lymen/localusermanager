@@ -15,15 +15,33 @@ class UserGroup(models.Model):
 class User(models.Model):
 	username	= models.CharField(max_length=120, unique=True)
 	password	= models.CharField(max_length=120)
-	group		= models.ForeignKey(UserGroup, on_delete=models.CASCADE)
+	group		= models.ManyToManyField(UserGroup, blank=False)
+
+	def get_group_values(self):
+		ret = ''
+		print(self.group.all())
+
+		for group in self.group.all():
+			ret = ret + group.groupname + ', '
+
+		return ret[:-2]
 
 class Account(models.Model):
 	username	= models.CharField(max_length=120, unique=True)
 	password	= models.CharField(max_length=120)
-	group		= models.ForeignKey(UserGroup, on_delete=models.CASCADE)
+	group		= models.ManyToManyField(UserGroup)
 
 	def __str__(self):
 		return u'{0}'.format(self.username)
+
+	def get_group_values(self):
+		ret = ''
+		print(self.group.all())
+
+		for group in self.group.all():
+			ret = ret + group.groupname + ', '
+
+		return ret[:-2]
 
 class AccountChangeLog(models.Model):
 	username	= models.ForeignKey(Account, on_delete=models.CASCADE)

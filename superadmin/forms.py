@@ -46,9 +46,10 @@ class CreateUserForm(forms.ModelForm):
 							}
 						)
 					)
-	group		= forms.ModelChoiceField(		
+	group		= forms.ModelMultipleChoiceField(
 						label='User Group',
 						required='True',
+						widget=forms.SelectMultiple(),
 						queryset = UserGroup.objects.all()
 					)
 	
@@ -79,9 +80,10 @@ class EditUserForm(forms.ModelForm):
 							}
 						)
 					)
-	group		= forms.ModelChoiceField(		
+	group		= forms.ModelMultipleChoiceField(
 						label='User Group',
 						required='True',
+						widget=forms.SelectMultiple(),
 						queryset = UserGroup.objects.all()
 					)
 	
@@ -130,9 +132,10 @@ class CreateAccountForm(forms.ModelForm):
 							}
 						)
 					)
-	group		= forms.ModelChoiceField(		
-						label='Group',
+	group		= forms.ModelMultipleChoiceField(
+						label='User Group',
 						required='True',
+						widget=forms.SelectMultiple(),
 						queryset = UserGroup.objects.all()
 					)
 	
@@ -163,9 +166,10 @@ class EditAccountForm(forms.ModelForm):
 							}
 						)
 					)
-	group		= forms.ModelChoiceField(		
-						label='Group',
+	group		= forms.ModelMultipleChoiceField(
+						label='User Group',
 						required='True',
+						widget=forms.SelectMultiple(),
 						queryset = UserGroup.objects.all()
 					)
 	
