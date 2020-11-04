@@ -63,7 +63,9 @@ def superadmin_user(request):
 		createuser = CreateUserForm(request.POST or None)
 		print(createuser.errors.as_data())
 		if createuser.is_valid():
-			createuser.save()
+			hashaccount = createuser.save()
+			hashaccount.password = make_password(createuser.cleaned_data['password'], None, 'pbkdf2_sha256')
+			hashaccount.save()
 			message = "Successfully created new user."
 		else:
 			result = False
@@ -75,14 +77,16 @@ def superadmin_user(request):
 	# Edit User Begin
 	if request.method=='POST' and 'edit_form' in request.POST:
 		edituser = EditUserForm(request.POST or None)
-		# edituser = PasswordChangeForm(request.user, request.POST)
 		print(edituser.errors.as_data())
 		if edituser.is_valid():
-			edituser.save();
+			hashaccount = edituser.save()
+			rawpw = edituser.cleaned_data['password']
+			hashaccount.password = make_password(rawpw)
+			hashaccount.save()
 			message = "New user was created."
 		else:
 			obj = User.objects.get(id=request.session.get('editid'))
-			obj.password = edituser.cleaned_data['password']
+			obj.password = make_password(edituser.cleaned_data['password'], None, 'pbkdf2_sha256')
 			obj.group.set(edituser.cleaned_data['group'])
 			obj.save()
 			del request.session['editid']
@@ -206,11 +210,13 @@ def superadmin_account(request):
 		createaccount = CreateAccountForm(request.POST or None)
 		print(createaccount.errors.as_data())
 		if createaccount.is_valid():
-			createaccount.save()
+			hashaccount = createaccount.save()
+			hashaccount.password = make_password(createaccount.cleaned_data['password'], None, 'pbkdf2_sha256')
+			hashaccount.save()
 			message = "Successfully created new Account."
 			try:
-				account = Account.objects.get(username=createaccount.cleaned_data['username'])
-				changelog = AccountChangeLog(username=account, password=createaccount.cleaned_data['password'])
+				account = Account.objects.get(username=hashaccount.username)
+				changelog = AccountChangeLog(username=account, password=hashaccount.password)
 				changelog.save()
 			except Account.DoesNotExist:
 				print("here")
@@ -225,14 +231,22 @@ def superadmin_account(request):
 	# Edit Account Begin
 	if request.method=='POST' and 'edit_form' in request.POST:
 		editaccount = EditAccountForm(request.POST or None)
-		# editaccount = PasswordChangeForm(request.account, request.POST)
 		print(editaccount.errors.as_data())
 		if editaccount.is_valid():
-			editaccount.save();
+			hashaccount = editaccount.save()
+			hashaccount.password = make_password(editaccount.cleaned_data['password'], None, 'pbkdf2_sha256')
+			hashaccount.save()
 			message = "New Account was created."
+			try:
+				account = Account.objects.get(username=hashaccount.username)
+				changelog = AccountChangeLog(username=account, password=hashaccount.password)
+				changelog.save()
+			except Account.DoesNotExist:
+				print("here")
+				changelog = ""
 		else:
 			obj = Account.objects.get(id=request.session.get('editid'))
-			obj.password = editaccount.cleaned_data['password']
+			obj.password = make_password(editaccount.cleaned_data['password'], None, 'pbkdf2_sha256')
 			obj.group.set(editaccount.cleaned_data['group'])
 			obj.save()
 			del request.session['editid']

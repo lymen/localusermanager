@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.hashers import make_password, check_password
 
 from superadmin.models import User, UserGroup, Account, AccountChangeLog
 from .forms import RawLoginForm
@@ -19,10 +20,15 @@ def user_login(request):
 			password = login.cleaned_data['password']
 
 			try:
-				user = User.objects.get(username=username, password=password)
-				login = RawLoginForm()
-				request.session['user'] = username
-				return redirect('user:user-home')
+				user = User.objects.get(username=username)
+				if check_password(password, user.password):
+					print("Success")
+					login = RawLoginForm()
+					request.session['user'] = username
+					return redirect('user:user-home')
+				else:
+					response = False
+					login = RawLoginForm()
 			except User.DoesNotExist:
 				response = False
 				login = RawLoginForm()
