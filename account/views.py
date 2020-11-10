@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.utils import timezone
-from django.contrib.auth.hashers import make_password, check_password
 
 from superadmin.models import Account, AccountChangeLog
 from .forms import RawAccountRegisterForm
@@ -19,19 +18,15 @@ def account_register(request):
 			password = registerform.cleaned_data['password']
 
 			try:
-				account = Account.objects.get(username=username)
-				if (check_password(password, account.password)):
-					message = "Password unchanged."
-				else:
-					print("Need to update password")
-					raise Exception("Need to update password!")
-			except:
+				account = Account.objects.get(username=username, password=password)
+				message = "Password unchanged."
+			except Account.DoesNotExist:
 				try:
 					account = Account.objects.get(username=username)
-					account.password = make_password(password, None, 'pbkdf2_sha256')
+					account.password = password
 					account.save()
 
-					changelog = AccountChangeLog(username=account, password=account.password)
+					changelog = AccountChangeLog(username=account, password=password)
 					changelog.save()
 
 					registerform = RawAccountRegisterForm()

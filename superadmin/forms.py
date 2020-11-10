@@ -73,8 +73,8 @@ class EditUserForm(forms.ModelForm):
 						)
 					)
 	password	= forms.CharField(
-						label='Password',
-						widget=forms.TextInput(
+						label='Enter New Password',
+						widget=forms.PasswordInput(
 							attrs={
 								"class": "form-control"
 							}
@@ -159,8 +159,8 @@ class EditAccountForm(forms.ModelForm):
 						)
 					)
 	password	= forms.CharField(
-						label='Password',
-						widget=forms.TextInput(
+						label='Enter New Password',
+						widget=forms.PasswordInput(
 							attrs={
 								"class": "form-control"
 							}

@@ -210,13 +210,11 @@ def superadmin_account(request):
 		createaccount = CreateAccountForm(request.POST or None)
 		print(createaccount.errors.as_data())
 		if createaccount.is_valid():
-			hashaccount = createaccount.save()
-			hashaccount.password = make_password(createaccount.cleaned_data['password'], None, 'pbkdf2_sha256')
-			hashaccount.save()
+			createaccount.save()
 			message = "Successfully created new Account."
 			try:
-				account = Account.objects.get(username=hashaccount.username)
-				changelog = AccountChangeLog(username=account, password=hashaccount.password)
+				account = Account.objects.get(username=createaccount.cleaned_data['username'])
+				changelog = AccountChangeLog(username=account, password=createaccount.cleaned_data['password'])
 				changelog.save()
 			except Account.DoesNotExist:
 				print("here")
@@ -233,22 +231,27 @@ def superadmin_account(request):
 		editaccount = EditAccountForm(request.POST or None)
 		print(editaccount.errors.as_data())
 		if editaccount.is_valid():
-			hashaccount = editaccount.save()
-			hashaccount.password = make_password(editaccount.cleaned_data['password'], None, 'pbkdf2_sha256')
-			hashaccount.save()
+			editaccount.save();
 			message = "New Account was created."
 			try:
-				account = Account.objects.get(username=hashaccount.username)
-				changelog = AccountChangeLog(username=account, password=hashaccount.password)
+				account = Account.objects.get(username=editaccount.cleaned_data['username'])
+				changelog = AccountChangeLog(username=account, password=editaccount.cleaned_data['password'])
 				changelog.save()
 			except Account.DoesNotExist:
 				print("here")
 				changelog = ""
 		else:
 			obj = Account.objects.get(id=request.session.get('editid'))
-			obj.password = make_password(editaccount.cleaned_data['password'], None, 'pbkdf2_sha256')
+			obj.password = editaccount.cleaned_data['password']
 			obj.group.set(editaccount.cleaned_data['group'])
 			obj.save()
+			try:
+				account = Account.objects.get(id=request.session.get('editid'))
+				changelog = AccountChangeLog(username=account, password=editaccount.cleaned_data['password'])
+				changelog.save()
+			except Account.DoesNotExist:
+				print("here")
+				changelog = ""
 			del request.session['editid']
 			message = "Successfully updated the Account details."
 		
