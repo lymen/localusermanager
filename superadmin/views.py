@@ -6,7 +6,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.hashers import make_password, check_password
 
 from .models import SuperAdmin, User, UserGroup, Account, AccountChangeLog
-from .forms import RawLoginForm, CreateUserForm, GroupForm, CreateAccountForm
+from .forms import RawLoginForm, ChangePasswordForm, CreateUserForm, GroupForm, CreateAccountForm
 from .forms import EditUserForm, EditAccountForm
 
 # update_session_auth_hash(request, user)
@@ -17,9 +17,11 @@ def superadmin_login(request):
 		return redirect('superadmin:superadmin-user')
 
 	login = RawLoginForm()
+	changepw = ChangePasswordForm()
 	response = True
+	message = ""
 
-	if request.method=='POST':
+	if request.method=='POST' and 'login_form' in request.POST:
 		login = RawLoginForm(request.POST)
 		
 		if login.is_valid():
@@ -33,11 +35,34 @@ def superadmin_login(request):
 				return redirect('superadmin:superadmin-user')
 			except SuperAdmin.DoesNotExist:
 				response = False
+				message = "Invalid username or password."
 				login = RawLoginForm()
+
+	if request.method=='POST' and 'changepw_form' in request.POST:
+		changepw = ChangePasswordForm(request.POST)
+
+		if changepw.is_valid():
+			username = changepw.cleaned_data['username']
+			oldpassword = changepw.cleaned_data['oldpassword']
+			newpassword = changepw.cleaned_data['newpassword']
+
+			try:
+				superadmin = SuperAdmin.objects.get(username=username, password=oldpassword)
+				superadmin.password = newpassword
+				superadmin.save()
+				changepw = ChangePasswordForm()
+				message = "Password updated."
+
+			except SuperAdmin.DoesNotExist:
+				response = False
+				message = "Invalid username or password."
+				changepw = ChangePasswordForm()
 
 	context = {
 		'login_form': login,
-		'response': response
+		'changepw_form': changepw,
+		'response': response,
+		'message': message
 	}
 	return render(request, "superadmin_login.html", context)
 

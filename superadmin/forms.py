@@ -27,6 +27,42 @@ class RawLoginForm(forms.Form):
 						)
 					)
 
+class ChangePasswordForm(forms.Form):
+	username	= forms.CharField(
+					label='',
+					required='True',
+					widget=forms.TextInput(
+							attrs={
+								"placeholder": "Username",
+								"id": "inputEmail",
+								"class": "form-control",
+								"autofocus": ""
+							}
+						)
+					)
+	oldpassword	= forms.CharField(
+					label='',
+					required='True',
+					widget=forms.PasswordInput(
+							attrs={
+								"placeholder": "Old Password",
+								"id": "inputPassword",
+								"class": "form-control"
+							}
+						)
+					)
+	newpassword	= forms.CharField(
+					label='',
+					required='True',
+					widget=forms.PasswordInput(
+							attrs={
+								"placeholder": "New Password",
+								"id": "inputPassword",
+								"class": "form-control"
+							}
+						)
+					)
+
 class CreateUserForm(forms.ModelForm):
 	username	= forms.CharField(
 						label='Username',
