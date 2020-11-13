@@ -15,7 +15,7 @@
   <body class="text-center">
     <div class="container">
       {{ changelog }}
-      <h1 class="h3 mb-3 font-weight-normal">Register/Edit your password</h1>
+      <h1 class="h3 mb-3 font-weight-normal">Update Password</h1>
       
       {% if not response %}
         <h5><p class="text-danger">Invalid username. You must input an existing username.</h5>
@@ -25,7 +25,7 @@
       
       <form class="form-signin" method="POST"> {% csrf_token %}
         {{ register_form|crispy }}
-        <input type='submit' class="btn btn-lg btn-primary btn-block" value='Save' name='register_form' />
+        <input type='submit' class="btn btn-lg btn-primary btn-block" value='Submit' name='register_form' />
       </form>
     </div>
   </body>

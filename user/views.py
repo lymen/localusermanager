@@ -65,7 +65,7 @@ def user_home(request):
 					try:
 						accountdata = Account.objects.get(id=id)
 						try:
-							changelog = AccountChangeLog.objects.filter(username=accountdata)
+							changelog = AccountChangeLog.objects.filter(username=accountdata).order_by('-modified')
 						except AccountChangeLog.DoesNotExist:
 							changelog = ""
 					except Account.DoesNotExist:
