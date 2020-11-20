@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import SuperAdmin, User, UserGroup, Account
+from .models import SuperAdmin, User, UserGroup, Account, CSV
 
 class RawLoginForm(forms.Form):
 	username	= forms.CharField(
@@ -215,4 +215,13 @@ class EditAccountForm(forms.ModelForm):
 			'username',
 			'password',
 			'group',
+		]
+
+class CSVModelForm(forms.ModelForm):
+	filename	= forms.FileField(label='')
+
+	class Meta:
+		model = CSV
+		fields = [
+			'filename'
 		]

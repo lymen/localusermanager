@@ -85,6 +85,11 @@
 		            </div>
 		        {% endfor %}
 		    {% endfor %}
+		    {% if message %}
+	            <div class="alert alert-danger">
+					<strong>{{ message }}</strong>
+				</div>
+			{% endif %}
         {% else %}
         	{% if message %}
 	            <div class="alert alert-success">
@@ -101,7 +106,6 @@
 					</div>
 					<div class="col-sm-6 align-self-end">
 						<div class="row justify-content-end">
-							<input type="text" class="form-control col-sm-5" placeholder="Search&hellip;">
 							<a href="#createModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Create Account</span></a>
 						</div>			
 					</div>
@@ -133,6 +137,15 @@
 {% endfor %}
 				</tbody>
 			</table>
+			<div class="row">
+					<div class="col-sm-6"></div>
+					<div class="col-sm-6 align-self-end">
+						<form method="POST" class="ui form" enctype="multipart/form-data">{% csrf_token %}
+							{{ csv_form }}
+							<input type="submit" class="btn btn-primary" value="Import CSV" name='csv_form'>
+						</form>
+					</div>
+			</div>
 		</div>
 	</div>        
 </div>

@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 # Create your models here.
 class SuperAdmin(models.Model):
@@ -47,3 +48,11 @@ class AccountChangeLog(models.Model):
 	username	= models.ForeignKey(Account, on_delete=models.CASCADE)
 	password	= models.CharField(max_length=120)
 	modified	= models.DateTimeField(auto_now_add=True)
+
+class CSV(models.Model):
+	filename = models.FileField(upload_to='csvs')
+	uploaded = models.DateTimeField(auto_now_add=True)
+	activated = models.BooleanField(default=False)
+
+	def __str__(self):
+		return f"File id: {self.id}"

@@ -1,15 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.hashers import make_password, check_password
 
-from .models import SuperAdmin, User, UserGroup, Account, AccountChangeLog
+from .models import SuperAdmin, User, UserGroup, Account, AccountChangeLog, CSV
 from .forms import RawLoginForm, ChangePasswordForm, CreateUserForm, GroupForm, CreateAccountForm
 from .forms import EditUserForm, EditAccountForm
+from .forms import CSVModelForm
 
-# update_session_auth_hash(request, user)
+import csv
 
 # Create your views here.
 def superadmin_login(request):
@@ -294,6 +295,24 @@ def superadmin_account(request):
 			return redirect('superadmin:superadmin-account')
 	# Delete Account End
 
+	# Upload CSV Begin
+	csvform = CSVModelForm()
+	if request.method=='POST' and 'csv_form' in request.POST:
+		csvform = CSVModelForm(request.POST or None, request.FILES or None)
+		if csvform.is_valid():
+			csvform.save()
+			obj = CSV.objects.get(activated=False)
+
+			result = import_CSV(obj.filename.path)
+			if result==False:
+				message = "There was an error when importing the file. Some names are duplicate."
+
+			obj.activated = True
+			obj.save()
+
+		csvform = CSVModelForm()
+	# Upload CSV End
+
 	accountlist = Account.objects.all()
 	context = {
 		'username': username,
@@ -301,10 +320,49 @@ def superadmin_account(request):
 		'account_list': accountlist,
 		'result': result,
 		'message': message,
-		'errorform' : errorform
+		'errorform' : errorform,
+		'csv_form': csvform
 	}
 
 	return render(request, "superadmin_account.html", context)
+
+def import_CSV(filepath):
+	result = False
+	with open(filepath, 'r') as f:
+		reader = csv.reader(f)
+
+		for i, row in enumerate(reader):
+			if i==0:
+				pass
+			else:
+				row = ";".join(row)
+				row = row.replace(";", " ")
+				row = row.split()
+				username = row[1]
+				password = row[2]
+
+				newaccount = ""
+				try:
+					newaccount = Account.objects.create(username=row[1], password=row[2])
+					changelog = AccountChangeLog(username=newaccount, password=newaccount.password)
+					changelog.save()
+				except:
+					continue
+
+				for j, group in enumerate(row):
+					if j==0 or j==1 or j==2:
+						pass
+					else:
+						try:
+							groupname = UserGroup.objects.get(groupname=group)
+							newaccount.group.add(groupname)
+							result = True
+						except UserGroup.DoesNotExist:
+							groupname = UserGroup.objects.create(groupname=group)
+							newaccount.group.add(groupname)
+							result = True
+
+	return result;
 
 def superadmin_logout(request):
 	username = request.session.get('adminuser')

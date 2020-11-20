@@ -6,7 +6,8 @@ from .models import (
 	UserGroup,
 	User,
 	Account,
-	AccountChangeLog
+	AccountChangeLog,
+	CSV
 )
 
 admin.site.register(SuperAdmin)
@@ -14,3 +15,4 @@ admin.site.register(UserGroup)
 admin.site.register(User)
 admin.site.register(Account)
 admin.site.register(AccountChangeLog)
+admin.site.register(CSV)
