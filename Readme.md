@@ -69,11 +69,11 @@ Clone repo to ```/var/www/localusermanager/```
 
 2. Enable new conf then restart apache
 
-```sudo a2ensite 000-default.conf```
+    ```sudo a2ensite 000-default.conf```
 
-```sudo a2enmod rewrite```
+    ```sudo a2enmod rewrite```
 
-```sudo systemctl restart apache2.service```
+    ```sudo systemctl restart apache2.service```
 
 3. Test website access by visiting the domain name or Linux Server IP
 
@@ -84,9 +84,9 @@ Clone repo to ```/var/www/localusermanager/```
 
 Links:
 
-*http://127.0.0.1:8000/superadmin <-- to access the superadmin page
+    *http://domainname/superadmin <-- to access the superadmin page
 
-*http://127.0.0.1:8000/user <-- to access the user page
+    *http://domainname/user <-- to access the user page
 
-*http://127.0.0.1:8000/ <-- to access the object page
+    *http://domainname/ <-- to access the object page
 
