@@ -25,9 +25,9 @@ Clone repo to ```/var/www/localusermanager/```
     
   5. Run the django server
 
-  ```python manage.py runserver```
+    ```python manage.py runserver```
 
-  Starting development server at ```http://127.0.0.1:8000/``` <-- user this link to access the web site
+    Starting development server at ```http://127.0.0.1:8000/``` <-- user this link to access the web site
 
   6. Add your Linux Server IP or domain name for the allowed hosts
    - Open ```/var/www/localusermanager/settings.py```
