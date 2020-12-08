@@ -223,12 +223,7 @@ Reference: https://www.digitalocean.com/community/tutorials/how-to-create-a-self
     		<Files wsgi.py>
     			Require all granted
     		</Files>
-    	</Directory>
-    
-    	#WSGIDaemonProcess localusermanager user=lymen python-path=/var/www/localusermanager python-home=/var/www/localusermanager/localusermanagerenv
-    	#WSGIProcessGroup localusermanager
-    	#WSGIScriptAlias / /var/www/localusermanager/localusermanager/wsgi.py
-    
+    	</Directory>   
     </VirtualHost>
     
     # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
